@@ -3,116 +3,40 @@
  <head>
    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
    <link href="bootstrap-3.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
-	<style>
-		table thead{
-			font-weight: bold;
-			color: #fff;
-			background-color: #666;
-		}
-		table tr td{
-			padding-right: 10px;
-			border-bottom: 1px solid gray;
-		}
-		/*I copied this striped trick from internet 
-		because I'm not good with CSS, sorry :(       */
-		tbody tr:nth-child(odd) {
-		   background-color: #ccc;
-		}
-	</style>
    <script src="./lib/jquery.js" type="text/javascript"></script>
-   <script type="text/javascript">
-	$(document).ready(function(){
-		
-		//loading the drivers into the table
-		$.ajax({
-			url: "http://localhost:8890"
-   	    }).then(function(drivers){
-   	    	$.each(drivers, function(id, driver){
-				addDriver(driver);
-   	    	});
-   	    });
-		
-		//add a new Driver
-		$("#save").click(function(){
-			$.ajax({
-				type: "POST",
-				url: "http://localhost:8890/save/"+$("#id").val(),
-				data:{
-					name: $("#name").val(),
-					team: $("#team").val()
-				}
-			}).done(function(data){
-				if ($("#id").val())
-					$("tr#driver"+$("#id").val()).html(
-							"<td>" +data.driver.id+ "</td>"
-							+"<td>" +data.driver.name+ "</td>"
-							+"<td>" +data.driver.team+ "</td>"
-							+"<td onclick='del(" +data.driver.id+ ")'>X</td>"
-							+"<td onclick='view(" +data.driver.id+ ")'>view</td>"
-							);
-				else
-					addDriver(data.driver);
-				$("form")[0].reset();
-				$("#id").val(null);
-			});
-		});
-     });
-	
-	//an auxiliar function to add the drivers to the table
-	function addDriver(driver){
-		$("#drivers tbody").append("<tr id='driver" +driver.id+ "'>"
-				+"<td>" +driver.id+ "</td>"
-				+"<td>" +driver.name+ "</td>"
-				+"<td>" +driver.team+ "</td>"
-				+"<td onclick='del(" +driver.id+ ")'>X</td>"
-				+"<td onclick='view(" +driver.id+ ")'>view</td>"
-		+"</tr>");
-	}
-	
-	//show a specific driver into the form
-	function view(id){
-		$.ajax({
-			url: "http://localhost:8890/view/"+id
-		}).done(function(data){
-			$("#id").val(data.driver.id);
-			$("#name").val(data.driver.name);
-			$("#team").val(data.driver.team);
-		});		
-	}
-
-	//delete a Driver
-	function del(id){
-		$.ajax({
-			url: "http://localhost:8890/del/"+id
-		}).then(function(data){
-			if(data.del)
-				$("#drivers tbody tr#driver"+id).remove();
-		});
-	}
-   </script>
+   <script src="api.js"></script>
  </head>
  <body>
- <h1>F1 Drivers</h1>
- <p><i>(Javascript+JQuery+REST)</i></p>
+ <div class="container">
+ <div class='page-header'>
+	 <h1>F1 Drivers</h1>
+	 <p><i>(Javascript+JQuery+REST)</i></p>
+ </div>
  
  <form>
  <fieldset style='float:left;margin-right:50px'>
  	<legend>New Driver</legend>
+ 	<input type="hidden" class='form-control' id="id">
+	
+	<div class="input-group input-group-lg">
+	 	<label for="name">Name</label>
+	 	<input class='form-control' type="text" id="name" required>
+ 	</div>
  	
- 	<input type="hidden" id="id">
- 	
- 	<label for="name">Name</label>
- 	<input type="text" id="name"><br>
- 	
- 	<label for="team">Team</label>
- 	<input type="text" id="team">
- 	
- 	<input type="button" id="save" value="save">
+ 	<div class="input-group input-group-lg">
+	 	<label for="team">Team</label>
+	 	<input class="form-control" type="text" id="team" required>
+ 	</div>
+
+ 	<div class="input-group input-group-lg">
+ 		<br>
+ 		<input type="button" class="btn btn-primary" id="save" value="save">
+ 	</div>
  </fieldset>
  
  <fieldset>
  	<legend>Drivers</legend>
-	 <table id="drivers">
+	 <table id="drivers" class="table table-striped">
 	 	<thead>
 	 		<tr><td>ID</td><td>Name</td><td>Team</td><td>Delete</td><td>View</td></tr>
 	 	</thead>
@@ -122,6 +46,6 @@
 	 </table>
  </fieldset> 
  </form>
- 
+ </div>
  </body>
  </html>
